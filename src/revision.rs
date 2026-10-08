@@ -269,10 +269,10 @@ impl Repository {
         })
     }
     fn is_shallow(&self, py: Python<'_>) -> PyResult<bool> {
-        self.handle.run(py, |r| Ok(r.is_shallow()))
+        self.handle.run(py, |r| r.is_shallow().map_err(to_py))
     }
     fn shallow_file(&self, py: Python<'_>) -> PyResult<PathBuf> {
-        self.handle.run(py, |r| Ok(r.shallow_file()))
+        self.handle.run(py, |r| r.shallow_file().map_err(to_py))
     }
     fn shallow_commits(&self, py: Python<'_>) -> PyResult<Option<Vec<ObjectId>>> {
         self.handle.run(py, |r| {

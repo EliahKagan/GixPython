@@ -1,16 +1,17 @@
 # Temporary upstream prerequisite
 
-This directory contains `gix-transport` from local Gitoxide commit
-`a13b2ced126803aab080a43dc89b9756fb9bfebd`, based on
-`f819565c2c4c56619c4888acef6cf3b8144cbccb`.
+Source matches `gix-transport/src` at Gitoxide `pygix` HEAD
+`e4d2b313b840ea0e00453791882dbc6eb7c636f6`. Its prerequisite commit is
+`ab1cb834df8f48e907f81e4b7471b06b4c9f1aa0`, based on public revision
+`1d7bac742f70b72ddda0c7294f4a97566b8db596`.
 
-The only source change is the reqwest client configuration hook needed to
-select a pure Rust TLS provider without a process-wide default. The upstream
-commit is local and awaits Sebastian Thiel’s review; nothing has been pushed.
-This source copy makes GixPython builds independent of a machine-specific
-worktree or an unpublished Git revision. Remove it after the hook lands upstream
-and update the pinned Gitoxide revision.
+The patch provides per-client reqwest configuration for the pure Rust TLS
+provider, with lazy initialization and redirect policy.
+The prerequisite remains on the prepared local branch for Sebastian Thiel's
+review. This reintegration did not modify or push that branch.
 
-Cargo metadata is normalized to use the pinned Git source for sibling crates;
-upstream workspace lints and test-only dependencies are omitted. Upstream tests
-were run in the original worktree (77 passed). Original source licenses apply.
+The source includes the updated base's security-audit fixes. Cargo sibling
+dependencies use the pinned public Git source; workspace lints and test-only
+dependencies are omitted. This source copy makes packaged builds independent
+of the local checkout and unpublished revisions. Remove it after the fix lands
+upstream and update the public pin. Original source licenses apply.

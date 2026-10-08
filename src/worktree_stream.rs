@@ -348,7 +348,7 @@ fn create_stream(
                                             continue;
                                         }
                                         let mut data = Vec::new();
-                                        let mut interruptible = gix::features::interrupt::Read {
+                                        let mut interruptible = gix::utils::interrupt::Read {
                                             inner: &mut entry,
                                             should_interrupt: &context.interrupt,
                                         };
@@ -377,7 +377,7 @@ fn create_stream(
                                     Command::Next => {
                                         native_generation.fetch_add(1, Ordering::AcqRel);
                                         std::io::copy(
-                                            &mut gix::features::interrupt::Read {
+                                            &mut gix::utils::interrupt::Read {
                                                 inner: &mut entry,
                                                 should_interrupt: &context.interrupt,
                                             },

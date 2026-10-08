@@ -150,7 +150,7 @@ impl Repository {
         })
     }
     fn editor(&self, py: Python<'_>) -> PyResult<Option<OsString>> {
-        self.handle.run(py, |r| Ok(r.editor()))
+        self.handle.run(py, |r| r.editor().map_err(to_py))
     }
     fn filesystem_options(&self, py: Python<'_>) -> PyResult<FilesystemCapabilities> {
         self.handle.run(py, |r| {

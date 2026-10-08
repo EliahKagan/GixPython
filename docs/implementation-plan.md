@@ -50,6 +50,14 @@ After upstream integration, package builds will use compatible crates.io release
 and retain macOS wheels plus an sdist. See [development instructions](../DEVELOPMENT.md)
 for the switch and migration requirements.
 
+The updated `pygix` branch was reintegrated on 2026-10-08 at
+`e4d2b313b840ea0e00453791882dbc6eb7c636f6`. Packaged dependencies use its
+public base `1d7bac742f70b72ddda0c7294f4a97566b8db596`, with the same three
+prerequisites refreshed under `vendor/`. Bindings propagate the new fallible
+path, configuration, reference, shallow-state, and worktree results, and use
+`gix::utils` for interruptible reads following the `gix-parallel` split.
+The existing release tag and upstream checkout are preserved.
+
 ## Acceptance
 
 Every completed capability has a Python integration check and accurate type/documentation coverage. Checks use disposable repositories and isolated Git configuration; both hash kinds and relevant feature selections are exercised. Shared-handle concurrency, GIL-disabled execution, partial iterator consumption, interruption, stale-reference rejection, and artifact installation are project requirements.

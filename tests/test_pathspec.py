@@ -20,6 +20,8 @@ class PathspecTests(unittest.TestCase):
 
     def test_matching_and_lazy_index_paths(self):
         spec = self.repo.pathspec(False, [b"dir/*.txt", b":(exclude)dir/skip.txt"], False, self.index)
+        self.assertEqual(spec.search().prefix_directory(), Path("."))
+        self.assertEqual(spec.search().longest_common_directory(), Path("dir"))
         self.assertTrue(spec.is_included(b"dir/a\xff.txt", False))
         self.assertFalse(spec.is_included("dir/skip.txt", False))
         match = spec.pattern_matching_relative_path("dir/skip.txt", False)
@@ -34,6 +36,9 @@ class PathspecTests(unittest.TestCase):
             self.assertEqual(list(entries), [])
         absent = self.repo.pathspec(False, ["missing/file"], False, self.index)
         self.assertIsNone(absent.index_entries_with_paths(self.index))
+        empty = self.repo.pathspec(False, [], False, self.index).search()
+        self.assertEqual(empty.prefix_directory(), Path("."))
+        self.assertIsNone(empty.longest_common_directory())
 
     def test_attribute_requirements_use_native_matching(self):
         (self.path / ".gitattributes").write_bytes(b"*.txt language=python\n")

@@ -48,7 +48,12 @@ impl IgnoreSearch {
     fn from_overrides(patterns: Vec<Bound<'_, PyAny>>, support_precious: bool) -> PyResult<Self> {
         let patterns = patterns
             .iter()
-            .map(|value| bytes(value).map(|v| gix::path::from_bstr(v.as_bstr()).into_owned().into_os_string()))
+            .map(|value| {
+                let value = bytes(value)?;
+                gix::path::from_bstr(value.as_bstr())
+                    .map(|path| path.into_owned().into_os_string())
+                    .map_err(to_py)
+            })
             .collect::<PyResult<Vec<_>>>()?;
         Ok(Self {
             inner: gix::ignore::Search::from_overrides(patterns, gix::ignore::search::Ignore { support_precious }),
@@ -147,7 +152,13 @@ impl AttributeStack {
     }
     #[pyo3(signature = (relative, mode=None))]
     fn at_entry(&self, py: Python<'_>, relative: &Bound<'_, PyAny>, mode: Option<u32>) -> PyResult<AttributePlatform> {
-        self.platform(py, gix::path::from_bstr(bytes(relative)?.as_bstr()).into_owned(), mode)
+        self.platform(
+            py,
+            gix::path::from_bstr(bytes(relative)?.as_bstr())
+                .map_err(to_py)?
+                .into_owned(),
+            mode,
+        )
     }
     fn attribute_matches(&self) -> PyResult<AttributeOutcome> {
         self.require_attributes()?;

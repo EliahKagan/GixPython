@@ -1,4 +1,4 @@
-use gix_error::{ErrorExt, Message, Result, ResultExt, bail, message};
+use gix_error::{ClassificationMarker, ErrorExt, Message, Result, ResultExt, bail, message, not_found};
 
 use crate::{
     FullName, FullNameRef, Reference, Target, packed,
@@ -58,7 +58,7 @@ impl Transaction<'_, '_> {
 
         let lock = match &mut change.update.change {
             Change::Delete { expected, .. } => {
-                let (base, relative_path) = store.reference_path_with_base(change.update.name.as_ref());
+                let (base, relative_path) = store.reference_path_with_base(change.update.name.as_ref())?;
                 let lock = gix_lock::Marker::acquire_to_hold_resource(
                     base.join(relative_path.as_ref()),
                     lock_fail_mode,
@@ -75,7 +75,7 @@ impl Transaction<'_, '_> {
                     (PreviousValue::ExistingMustMatch(_) | PreviousValue::Any, None)
                     | (PreviousValue::MustExist | PreviousValue::Any, Some(_)) => {}
                     (PreviousValue::MustExist | PreviousValue::MustExistAndMatch(_), None) => {
-                        bail!(gix_error::not_found("The reference to delete must exist"));
+                        bail!(not_found("The reference to delete must exist"));
                     }
                     (
                         PreviousValue::MustExistAndMatch(previous) | PreviousValue::ExistingMustMatch(previous),
@@ -101,7 +101,7 @@ impl Transaction<'_, '_> {
                 Some(lock)
             }
             Change::Update { expected, new, .. } => {
-                let (base, relative_path) = store.reference_path_with_base(change.update.name.as_ref());
+                let (base, relative_path) = store.reference_path_with_base(change.update.name.as_ref())?;
                 let obtain_lock = || {
                     gix_lock::File::acquire_to_update_resource(
                         base.join(relative_path.as_ref()),
@@ -119,7 +119,7 @@ impl Transaction<'_, '_> {
                     | (PreviousValue::MustExist, Some(_))
                     | (PreviousValue::MustNotExist | PreviousValue::ExistingMustMatch(_), None) => {}
                     (PreviousValue::MustExist, None) => {
-                        bail!(gix_error::not_found("The reference to update must exist"));
+                        bail!(not_found("The reference to update must exist"));
                     }
                     (PreviousValue::MustNotExist, Some(existing)) => {
                         if existing.target != *new {
@@ -147,9 +147,7 @@ impl Transaction<'_, '_> {
                     }
 
                     (PreviousValue::MustExistAndMatch(previous), None) => {
-                        bail!(gix_error::not_found(format!(
-                            "The reference must exist with content {previous}"
-                        )));
+                        bail!("The reference must exist with content {previous}".not_found());
                     }
                 }
 
@@ -197,8 +195,8 @@ impl Transaction<'_, '_> {
     /// Rollbacks happen automatically on failure and they tend to be perfect.
     /// This method is idempotent.
     ///
-    /// Failed edits identify the requested and resolved names in [metadata](gix_error::Error::metadata()) `reference` and
-    /// `referent` (bytes).
+    /// Failed edits identify the requested name in [metadata](gix_error::Error::metadata()) `reference` (bytes).
+    /// `referent` records the resolved name only when it differs from the requested name.
     /// [`ReferenceOutOfDate`] and [`MustNotExist`] retain the actual target observed while holding the lock.
     pub fn prepare(
         self,
@@ -360,11 +358,12 @@ impl Transaction<'_, '_> {
                     ref_name = parent.name();
                     cursor = parent.parent_index;
                 }
-                return Err(err.and_raise(
-                    Message::new("Could not prepare reference edit")
-                        .with("reference", ref_name)
-                        .with("referent", referent),
-                ));
+                let differs = ref_name != referent;
+                let mut context = Message::new("Could not prepare reference edit").with("reference", ref_name);
+                if differs {
+                    context = context.with("referent", referent);
+                }
+                return Err(err.and_raise(context));
             }
 
             // traverse parent chain from leaf/peeled ref and set the leaf previous oid accordingly
@@ -434,7 +433,11 @@ impl std::fmt::Display for ReferenceOutOfDate {
     }
 }
 
-impl std::error::Error for ReferenceOutOfDate {}
+impl std::error::Error for ReferenceOutOfDate {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        Some(const { &ClassificationMarker::CONFLICT })
+    }
+}
 
 /// A reference exists with a different target although the edit required its absence.
 #[derive(Debug)]
@@ -455,4 +458,8 @@ impl std::fmt::Display for MustNotExist {
     }
 }
 
-impl std::error::Error for MustNotExist {}
+impl std::error::Error for MustNotExist {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        Some(const { &ClassificationMarker::CONFLICT })
+    }
+}

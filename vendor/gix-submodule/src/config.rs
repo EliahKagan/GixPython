@@ -1,5 +1,5 @@
 use bstr::{BStr, BString, ByteSlice};
-use gix_error::Result;
+use gix_error::{MetadataValue, Result};
 
 /// Determine how the submodule participates in `git status` queries. This setting also affects `git diff`.
 #[derive(Default, Debug, Clone, Copy, Ord, PartialOrd, Eq, PartialEq, Hash)]
@@ -65,13 +65,11 @@ impl FetchRecurse {
             }),
             Ok(None) => None,
             Err(err) => {
-                let Some(gix_error::MetadataValue::Bytes(input)) =
-                    err.metadata().find_map(|values| values.get("input"))
-                else {
+                let Some(MetadataValue::Bytes(input)) = err.metadata().find_map(|values| values.get("input")) else {
                     unreachable!("gix-config-value validation errors retain their input as bytes");
                 };
-                if input != "on-demand" {
-                    return Err(input.clone());
+                if input != b"on-demand" {
+                    return Err(input.clone().into());
                 }
                 Some(FetchRecurse::OnDemand)
             }

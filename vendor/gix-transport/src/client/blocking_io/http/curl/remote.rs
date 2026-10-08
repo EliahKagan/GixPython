@@ -11,8 +11,8 @@ use std::{
 
 use bstr::ByteSlice;
 use curl::easy::{Auth, Easy2};
-use gix_error::{Error, ErrorExt, OptionExt, Result, ResultExt, message};
-use gix_features::io::pipe;
+use gix_error::{ClassificationMarker, Error, ErrorExt, OptionExt, Result, ResultExt, message};
+use gix_utils::io::pipe;
 use parking_lot::Mutex;
 
 use crate::client::blocking_io::http::{
@@ -23,14 +23,11 @@ use crate::client::blocking_io::http::{
     traits::PostBodyDataKind,
 };
 
-fn classify_curl(err: curl::Error) -> gix_error::Error {
+fn classify_curl(err: curl::Error) -> Error {
     if curl_is_retryable(&err) {
-        gix_error::Error::from_error(gix_error::ClassificationMarker::with_source(
-            gix_error::Class::Retryable,
-            err,
-        ))
+        Error::from_error(ClassificationMarker::with_source(gix_error::Class::Retryable, err))
     } else {
-        gix_error::Error::from_error(err)
+        Error::from_error(err)
     }
 }
 
@@ -140,7 +137,14 @@ impl Handler {
         };
         match Self::parse_status_inner(data) {
             Ok(status) if !(200..=valid_end).contains(&status) => {
-                Some((status, message!("Received HTTP status {status}").raise()))
+                let failure = message!("Received HTTP status {status}");
+                let failure = match status {
+                    403 => failure.permission_denied_error(),
+                    409 => failure.conflict_error(),
+                    501 => failure.unsupported_error(),
+                    _ => failure.raise(),
+                };
+                Some((status, failure))
             }
             Ok(_) => None,
             Err(err) => Some((500, err)),
@@ -369,7 +373,7 @@ impl curl::easy::Handler for Handler {
                     writer
                         .channel
                         .send(Err(io::Error::new(
-                            if (500..600).contains(&status) {
+                            if (500..600).contains(&status) && status != 501 {
                                 io::ErrorKind::ConnectionAborted
                             } else {
                                 io::ErrorKind::Other
@@ -410,7 +414,7 @@ pub fn new() -> Worker {
     let redirected_base_url_shared_out = redirected_base_url_shared.clone();
     let (req_send, req_recv) = sync_channel(0);
     let (res_send, res_recv) = sync_channel(0);
-    let handle = std::thread::spawn(move || -> Result {
+    let handle = std::thread::spawn(gix_trace::in_thread(move || -> Result {
         let mut handle = Easy2::new(Handler::default());
         // We don't wait for the possibility for pipelining to become clear, and curl tries to reuse connections by default anyway.
         curl!(handle.pipewait(false));
@@ -650,7 +654,7 @@ pub fn new() -> Worker {
             }
         }
         Ok(())
-    });
+    }));
     (handle, req_send, res_recv, redirected_base_url_shared_out)
 }
 
@@ -678,8 +682,28 @@ mod authentication_tests {
     use std::io::Read;
 
     #[test]
+    fn http_statuses_are_classified_conservatively() {
+        use gix_error::Class;
+        for (status, expected) in [
+            (403, Some(Class::PermissionDenied)),
+            (409, Some(Class::Conflict)),
+            (501, Some(Class::Unsupported)),
+            (400, None),
+        ] {
+            let response = format!("HTTP/1.1 {status} Response\r\n");
+            let (_, err) = super::Handler::parse_status(response.as_bytes(), super::FollowRedirects::None)
+                .expect("the status reports a failure");
+            assert_eq!(
+                err.classify().map(|class| class.class()).collect::<Vec<_>>(),
+                expected.into_iter().collect::<Vec<_>>(),
+                "known HTTP statuses guide recovery; unknown failures remain unclassified"
+            );
+        }
+    }
+
+    #[test]
     fn only_current_challenges_are_collected_and_continuations_are_unfolded() {
-        let (writer, mut reader) = gix_features::io::pipe::unidirectional(16);
+        let (writer, mut reader) = gix_utils::io::pipe::unidirectional(16);
         let mut handler = super::Handler {
             send_header: Some(writer),
             ..Default::default()
@@ -899,15 +923,14 @@ mod tests {
     }
 
     #[test]
-    fn aborted_uploads_preserve_the_callback_error() {
+    fn aborted_uploads_preserve_the_callback_error() -> gix_testtools::TestResult {
         let (writer, reader) = pipe::unidirectional(1);
         writer
             .channel
             .send(Err(io::Error::other(gix_error::ClassificationMarker::with_source(
                 gix_error::Class::Retryable,
                 gix_error::not_found("custom upload source is unavailable"),
-            ))))
-            .expect("the upload reader is alive");
+            ))))?;
         let mut handler = Handler {
             receive_body: Some(StreamOrBuffer::Stream(reader)),
             ..Default::default()
@@ -919,16 +942,17 @@ mod tests {
         Custom {
             kind: Other,
             error: [42] Operation was aborted by an application callback
-            |
-            └─ I/O error (Other)
-            |
-            └─ custom upload source is unavailable,
+            
+            Caused by:
+                0: I/O error (Other)
+                1: custom upload source is unavailable,
         }
         ");
         assert!(err.can_retry(), "the custom upload source retains its retry policy");
         assert!(err.is_not_found(), "other callback classifications survive too");
         assert!(err.downcast_any_ref::<curl::Error>().is_some());
         assert!(handler.io_error.is_none(), "a later request cannot reuse this failure");
+        Ok(())
     }
 
     #[test]
@@ -946,10 +970,10 @@ mod tests {
         Custom {
             kind: BrokenPipe,
             error: [23] Failed writing received data to disk/application
-            |
-            └─ I/O error (BrokenPipe)
-            |
-            └─ sending on a closed channel,
+            
+            Caused by:
+                0: I/O error (BrokenPipe)
+                1: sending on a closed channel,
         }
         ");
         assert_eq!(err.kind(), io::ErrorKind::BrokenPipe);

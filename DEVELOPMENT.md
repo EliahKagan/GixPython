@@ -10,13 +10,13 @@ GitHub CI setup is authorized for this repository, including pushing the committ
 
 ## Native upstream prerequisite
 
-The manifest pins Gitoxide revision `f819565c2c4c56619c4888acef6cf3b8144cbccb`. Three small fixes are included as source-preserving Cargo patches under `vendor/`:
+The manifest pins Gitoxide revision `1d7bac742f70b72ddda0c7294f4a97566b8db596`. Three small fixes are included as source-preserving Cargo patches under `vendor/`:
 
 | Crate | Local upstream commit | Reason |
 | --- | --- | --- |
-| `gix-transport` | `a13b2ced126803aab080a43dc89b9756fb9bfebd` | Per-client reqwest TLS configuration with cached/lazy initialization and redirect policy. |
-| `gix-ref` | `97c08543a63252032f9baf7f8de89cd0996db8d9` | Preserve raw reflog message bytes. |
-| `gix-submodule` | `fe215611d5960db7b4c534a6dba46b8b338fcf15` | Query submodule configuration using literal byte names. |
+| `gix-transport` | `ab1cb834df8f48e907f81e4b7471b06b4c9f1aa0` | Per-client reqwest TLS configuration with cached/lazy initialization and redirect policy. |
+| `gix-ref` | `066b042d68e5697b8272b636272c0c4253884882` | Preserve raw reflog message bytes. |
+| `gix-submodule` | `e4d2b313b840ea0e00453791882dbc6eb7c636f6` | Query submodule configuration using literal byte names. |
 
 Each directory includes its licenses and `README.pygix.md` provenance. Cargo manifests reference the pinned Git source for sibling dependencies. The source distribution includes these patches and does not require the developer's sibling checkout or an unpublished remote commit. Remove each patch after updating to an upstream revision containing its fix.
 

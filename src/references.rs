@@ -458,7 +458,8 @@ impl Reference {
     }
     fn log_exists(&self, py: Python<'_>) -> PyResult<bool> {
         let inner = self.inner.clone();
-        self.handle.run(py, move |repo| Ok(inner.attach(repo).log_exists()))
+        self.handle
+            .run(py, move |repo| inner.attach(repo).log_exists().map_err(to_py))
     }
     fn log_iter(&self) -> ReflogIterPlatform {
         ReflogIterPlatform {

@@ -1,13 +1,17 @@
 # Temporary upstream prerequisite
 
-Source from local Gitoxide commit `97c08543a63252032f9baf7f8de89cd0996db8d9`,
-based on `f819565c2c4c56619c4888acef6cf3b8144cbccb`.
+Source matches `gix-ref/src` at Gitoxide `pygix` HEAD
+`e4d2b313b840ea0e00453791882dbc6eb7c636f6`. Its prerequisite commit is
+`066b042d68e5697b8272b636272c0c4253884882`, based on public revision
+`1d7bac742f70b72ddda0c7294f4a97566b8db596`.
 
-The only source change makes reflog writes preserve arbitrary message bytes
-using `write_all` instead of BStr text formatting. The upstream regression
-was verified failing before the fix and passing after it for both hash kinds.
-The commit is local and awaits Sebastian Thiel’s review; nothing was pushed.
+The patch preserves arbitrary reflog message bytes with `write_all` rather
+than BStr text formatting.
+The prerequisite remains on the prepared local branch for Sebastian Thiel's
+review. This reintegration did not modify or push that branch.
 
-Cargo sibling dependencies use the pinned Git source. Workspace lints and
-test-only dependencies are omitted. Remove this directory after the fix lands
-upstream and update the pinned Gitoxide revision. Original source licenses apply.
+The source includes the updated base's security-audit fixes. Cargo sibling
+dependencies use the pinned public Git source; workspace lints and test-only
+dependencies are omitted. This source copy makes packaged builds independent
+of the local checkout and unpublished revisions. Remove it after the fix lands
+upstream and update the public pin. Original source licenses apply.

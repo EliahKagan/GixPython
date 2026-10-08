@@ -1,3 +1,4 @@
+
 [package]
 name = "gix-submodule"
 version = "0.35.0"
@@ -19,15 +20,14 @@ sha1 = ["gix-refspec/sha1"]
 sha256 = ["gix-refspec/sha256"]
 
 [dependencies]
-gix-pathspec = { version = "^0.21.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "f819565c2c4c56619c4888acef6cf3b8144cbccb" }
-gix-error = { version = "^0.4.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "f819565c2c4c56619c4888acef6cf3b8144cbccb" }
-gix-refspec = { version = "^0.46.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "f819565c2c4c56619c4888acef6cf3b8144cbccb" }
-gix-config = { version = "^0.61.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "f819565c2c4c56619c4888acef6cf3b8144cbccb" }
-gix-path = { version = "^0.13.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "f819565c2c4c56619c4888acef6cf3b8144cbccb" }
-gix-url = { version = "^0.39.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "f819565c2c4c56619c4888acef6cf3b8144cbccb" }
+gix-pathspec = { version = "^0.21.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "1d7bac742f70b72ddda0c7294f4a97566b8db596" }
+gix-error = { version = "^0.4.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "1d7bac742f70b72ddda0c7294f4a97566b8db596", features = ["bstr"] }
+gix-refspec = { version = "^0.46.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "1d7bac742f70b72ddda0c7294f4a97566b8db596" }
+gix-config = { version = "^0.61.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "1d7bac742f70b72ddda0c7294f4a97566b8db596" }
+gix-path = { version = "^0.13.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "1d7bac742f70b72ddda0c7294f4a97566b8db596" }
+gix-url = { version = "^0.39.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "1d7bac742f70b72ddda0c7294f4a97566b8db596" }
 
 bstr = { version = "1.12.0", default-features = false }
-
 
 [package.metadata.docs.rs]
 features = ["sha1"]

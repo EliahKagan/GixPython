@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    `GIXPYTHON_GITOXIDE_PATH` or `--gitoxide-path`, using a separate development
    lockfile. `--packaged` forces release dependencies. Local builds report checkout HEAD.
 
+### Other
+
+ - Reintegrate the updated Gitoxide `pygix` branch and its security-audit base.
+   Refresh the three bundled prerequisites and propagate native errors from
+   fallible path, configuration, reference, shallow-state, and worktree queries.
+
 ## 0.1.0 (2026-10-05)
 
 ### New Features

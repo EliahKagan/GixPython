@@ -1,13 +1,17 @@
 # Temporary upstream prerequisite
 
-Source from local Gitoxide commit `fe215611d5960db7b4c534a6dba46b8b338fcf15`,
-based on `f819565c2c4c56619c4888acef6cf3b8144cbccb`.
+Source matches `gix-submodule/src` at Gitoxide `pygix` HEAD
+`e4d2b313b840ea0e00453791882dbc6eb7c636f6`. Its prerequisite commit is
+`e4d2b313b840ea0e00453791882dbc6eb7c636f6`, based on public revision
+`1d7bac742f70b72ddda0c7294f4a97566b8db596`.
 
-The source change looks up submodule fields and activity by literal byte names,
-without formatting names through UTF-8. The regression failed before the fix;
-all 26 native submodule tests passed afterward with both hash kinds enabled.
-The commit is local and awaits Sebastian Thiel’s review; nothing was pushed.
+The patch queries submodule fields and activity using literal byte names
+without formatting them through UTF-8.
+The prerequisite remains on the prepared local branch for Sebastian Thiel's
+review. This reintegration did not modify or push that branch.
 
-Cargo sibling dependencies use the pinned Git source. Workspace lints and
-test-only dependencies are omitted. Remove this directory after the fix lands
-upstream and update the pinned Gitoxide revision. Original source licenses apply.
+The source includes the updated base's security-audit fixes. Cargo sibling
+dependencies use the pinned public Git source; workspace lints and test-only
+dependencies are omitted. This source copy makes packaged builds independent
+of the local checkout and unpublished revisions. Remove it after the fix lands
+upstream and update the public pin. Original source licenses apply.

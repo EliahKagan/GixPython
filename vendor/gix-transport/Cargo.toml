@@ -22,7 +22,7 @@ blocking-client = ["gix-packetline/blocking-io"]
 http-client = [
     "base64",
     "parking_lot",
-    "gix-features/io-pipe",
+    "gix-utils/io-pipe",
     "blocking-client",
     "gix-credentials",
 ]
@@ -70,15 +70,16 @@ async-client = [
 serde = ["dep:serde", "bstr/serde"]
 
 [dependencies]
-gix-command = { version = "^0.11.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "f819565c2c4c56619c4888acef6cf3b8144cbccb" }
-gix-error = { version = "^0.4.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "f819565c2c4c56619c4888acef6cf3b8144cbccb" }
-gix-path = { version = "^0.13.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "f819565c2c4c56619c4888acef6cf3b8144cbccb" }
-gix-features = { version = "^0.50.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "f819565c2c4c56619c4888acef6cf3b8144cbccb" }
-gix-url = { version = "^0.39.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "f819565c2c4c56619c4888acef6cf3b8144cbccb" }
-gix-sec = { version = "^0.15.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "f819565c2c4c56619c4888acef6cf3b8144cbccb" }
-gix-packetline = { version = "^0.23.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "f819565c2c4c56619c4888acef6cf3b8144cbccb" }
-gix-credentials = { version = "^0.41.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "f819565c2c4c56619c4888acef6cf3b8144cbccb", optional = true }
-gix-quote = { version = "^0.9.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "f819565c2c4c56619c4888acef6cf3b8144cbccb" }
+gix-trace = { version = "^0.2.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "1d7bac742f70b72ddda0c7294f4a97566b8db596" }
+gix-utils = { version = "^0.4.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "1d7bac742f70b72ddda0c7294f4a97566b8db596", optional = true }
+gix-command = { version = "^0.11.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "1d7bac742f70b72ddda0c7294f4a97566b8db596" }
+gix-error = { version = "^0.4.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "1d7bac742f70b72ddda0c7294f4a97566b8db596" }
+gix-path = { version = "^0.13.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "1d7bac742f70b72ddda0c7294f4a97566b8db596" }
+gix-url = { version = "^0.39.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "1d7bac742f70b72ddda0c7294f4a97566b8db596" }
+gix-sec = { version = "^0.15.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "1d7bac742f70b72ddda0c7294f4a97566b8db596" }
+gix-packetline = { version = "^0.23.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "1d7bac742f70b72ddda0c7294f4a97566b8db596" }
+gix-credentials = { version = "^0.41.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "1d7bac742f70b72ddda0c7294f4a97566b8db596", optional = true }
+gix-quote = { version = "^0.9.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "1d7bac742f70b72ddda0c7294f4a97566b8db596" }
 
 serde = { version = "1.0.114", optional = true, default-features = false, features = [
     "std",

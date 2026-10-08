@@ -55,7 +55,7 @@ impl Worktree {
     }
     fn id<'py>(&self, py: Python<'py>) -> PyResult<Option<Bound<'py, PyBytes>>> {
         Ok(self
-            .with(py, |w| Ok(w.id().map(|n| n.to_vec())))?
+            .with(py, |w| w.id().map(|n| n.map(|n| n.to_vec())).map_err(to_py))?
             .map(|v| PyBytes::new(py, &v)))
     }
     fn lock_reason<'py>(&self, py: Python<'py>) -> PyResult<Option<Bound<'py, PyBytes>>> {
@@ -117,12 +117,12 @@ pub struct WorktreeProxy {
     git_dir: PathBuf,
 }
 impl WorktreeProxy {
-    fn from_native(handle: RepoHandle, proxy: gix::worktree::Proxy<'_>) -> Self {
-        Self {
+    fn from_native(handle: RepoHandle, proxy: gix::worktree::Proxy<'_>) -> PyResult<Self> {
+        Ok(Self {
             handle,
-            id: proxy.id().to_vec(),
+            id: proxy.id().map_err(to_py)?.to_vec(),
             git_dir: proxy.git_dir().into(),
-        }
+        })
     }
     fn with<T: Send + 'static>(
         &self,
@@ -133,6 +133,7 @@ impl WorktreeProxy {
         self.handle.run(py, move |repo| {
             work(
                 repo.worktree_proxy_by_id(id.as_bstr())
+                    .map_err(to_py)?
                     .ok_or_else(|| PyValueError::new_err("worktree registration is no longer available"))?,
             )
         })
@@ -176,6 +177,7 @@ impl WorktreeProxy {
         runtime::run(py, "remove worktree", progress, None, move |ctx| {
             handle.with(|r| {
                 r.worktree_proxy_by_id(id.as_bstr())
+                    .map_err(to_py)?
                     .ok_or_else(|| PyValueError::new_err("worktree registration is no longer available"))?
                     .remove(force.unwrap_or_default().inner, ctx.progress)
                     .map_err(to_py)
@@ -226,12 +228,10 @@ impl Repository {
         let handle = self.handle.clone();
         self.handle.run(py, move |r| {
             r.worktrees()
-                .map(|v| {
-                    v.into_iter()
-                        .map(|p| WorktreeProxy::from_native(handle.clone(), p))
-                        .collect()
-                })
-                .map_err(to_py)
+                .map_err(to_py)?
+                .into_iter()
+                .map(|p| WorktreeProxy::from_native(handle.clone(), p))
+                .collect()
         })
     }
     #[pyo3(signature=(*,progress=None,cancel=None))]
@@ -257,8 +257,10 @@ impl Repository {
         let id = bytes(id)?;
         let handle = self.handle.clone();
         self.handle.run(py, move |r| {
-            Ok(r.worktree_proxy_by_id(id.as_bstr())
-                .map(|p| WorktreeProxy::from_native(handle, p)))
+            r.worktree_proxy_by_id(id.as_bstr())
+                .map_err(to_py)?
+                .map(|p| WorktreeProxy::from_native(handle, p))
+                .transpose()
         })
     }
     fn main_repo(&self, py: Python<'_>) -> PyResult<Repository> {

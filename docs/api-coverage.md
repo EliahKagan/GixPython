@@ -1,7 +1,7 @@
 # Native API coverage
 
 GixPython wraps Gitoxide's repository operations and the objects they return.
-The source baseline is [`gix` at `f819565c2c4c56619c4888acef6cf3b8144cbccb`](https://github.com/GitoxideLabs/gitoxide/tree/f819565c2c4c56619c4888acef6cf3b8144cbccb/gix/src).
+The source baseline is [`gix` at `1d7bac742f70b72ddda0c7294f4a97566b8db596`](https://github.com/GitoxideLabs/gitoxide/tree/1d7bac742f70b72ddda0c7294f4a97566b8db596/gix/src).
 Small vendored fixes retain their individual provenance under `vendor/`.
 This is broad coverage of the native engine, not a claim to implement every
 command available in the Git executable or every generic Rust helper.

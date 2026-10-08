@@ -21,21 +21,19 @@ sha1 = ["gix-hash/sha1"]
 sha256 = ["gix-hash/sha256"]
 ## Data structures implement `serde::Serialize` and `serde::Deserialize`.
 serde = ["dep:serde", "gix-hash/serde", "gix-actor/serde", "gix-object/serde"]
-## Enable support for thread-safety.
-parallel = ["gix-features/parallel"]
 
 [dependencies]
-gix-error = { version = "^0.4.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "f819565c2c4c56619c4888acef6cf3b8144cbccb" }
-gix-features = { version = "^0.50.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "f819565c2c4c56619c4888acef6cf3b8144cbccb", features = ["walkdir"] }
-gix-fs = { version = "^0.23.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "f819565c2c4c56619c4888acef6cf3b8144cbccb" }
-gix-path = { version = "^0.13.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "f819565c2c4c56619c4888acef6cf3b8144cbccb" }
-gix-hash = { version = "^0.27.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "f819565c2c4c56619c4888acef6cf3b8144cbccb" }
-gix-object = { version = "^0.65.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "f819565c2c4c56619c4888acef6cf3b8144cbccb" }
-gix-utils = { version = "^0.4.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "f819565c2c4c56619c4888acef6cf3b8144cbccb" }
-gix-validate = { version = "^0.12.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "f819565c2c4c56619c4888acef6cf3b8144cbccb" }
-gix-actor = { version = "^0.43.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "f819565c2c4c56619c4888acef6cf3b8144cbccb" }
-gix-lock = { version = "^25.0.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "f819565c2c4c56619c4888acef6cf3b8144cbccb" }
-gix-tempfile = { version = "^25.0.0", default-features = false, git = "https://github.com/GitoxideLabs/gitoxide", rev = "f819565c2c4c56619c4888acef6cf3b8144cbccb" }
+gix-parallel = { version = "^0.50.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "1d7bac742f70b72ddda0c7294f4a97566b8db596" }
+gix-error = { version = "^0.4.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "1d7bac742f70b72ddda0c7294f4a97566b8db596", features = ["bstr"] }
+gix-fs = { version = "^0.23.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "1d7bac742f70b72ddda0c7294f4a97566b8db596", features = ["walkdir"] }
+gix-path = { version = "^0.13.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "1d7bac742f70b72ddda0c7294f4a97566b8db596" }
+gix-hash = { version = "^0.27.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "1d7bac742f70b72ddda0c7294f4a97566b8db596" }
+gix-object = { version = "^0.65.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "1d7bac742f70b72ddda0c7294f4a97566b8db596" }
+gix-utils = { version = "^0.4.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "1d7bac742f70b72ddda0c7294f4a97566b8db596" }
+gix-validate = { version = "^0.12.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "1d7bac742f70b72ddda0c7294f4a97566b8db596" }
+gix-actor = { version = "^0.43.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "1d7bac742f70b72ddda0c7294f4a97566b8db596" }
+gix-lock = { version = "^25.0.0", git = "https://github.com/GitoxideLabs/gitoxide", rev = "1d7bac742f70b72ddda0c7294f4a97566b8db596" }
+gix-tempfile = { version = "^25.0.0", default-features = false, git = "https://github.com/GitoxideLabs/gitoxide", rev = "1d7bac742f70b72ddda0c7294f4a97566b8db596" }
 serde = { version = "1.0.114", optional = true, default-features = false, features = ["derive"] }
 
 # packed refs

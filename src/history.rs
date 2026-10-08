@@ -747,15 +747,18 @@ mod signing {
             format!("{:?}", self.inner.format)
         }
         #[getter]
-        fn program<'py>(&self, py: Python<'py>) -> Bound<'py, PyBytes> {
-            PyBytes::new(py, &gix::path::into_bstr(std::path::PathBuf::from(&self.inner.program)))
+        fn program<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyBytes>> {
+            Ok(PyBytes::new(
+                py,
+                &gix::path::into_bstr(std::path::PathBuf::from(&self.inner.program)).map_err(to_py)?,
+            ))
         }
         #[getter]
-        fn signing_key<'py>(&self, py: Python<'py>) -> Bound<'py, PyBytes> {
-            PyBytes::new(
+        fn signing_key<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyBytes>> {
+            Ok(PyBytes::new(
                 py,
-                &gix::path::into_bstr(std::path::PathBuf::from(&self.inner.signing_key)),
-            )
+                &gix::path::into_bstr(std::path::PathBuf::from(&self.inner.signing_key)).map_err(to_py)?,
+            ))
         }
     }
     #[pymethods]

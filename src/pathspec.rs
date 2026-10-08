@@ -203,11 +203,14 @@ impl PathspecSearch {
     fn common_prefix<'py>(&self, py: Python<'py>) -> Bound<'py, PyBytes> {
         PyBytes::new(py, self.inner.common_prefix())
     }
-    fn prefix_directory(&self) -> PathBuf {
-        self.inner.prefix_directory().into_owned()
+    fn prefix_directory(&self) -> PyResult<PathBuf> {
+        self.inner.prefix_directory().map(|v| v.into_owned()).map_err(to_py)
     }
-    fn longest_common_directory(&self) -> Option<PathBuf> {
-        self.inner.longest_common_directory().map(|v| v.into_owned())
+    fn longest_common_directory(&self) -> PyResult<Option<PathBuf>> {
+        self.inner
+            .longest_common_directory()
+            .map(|v| v.map(|v| v.into_owned()))
+            .map_err(to_py)
     }
 }
 

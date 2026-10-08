@@ -1,5 +1,48 @@
 # Local validation
 
+## Updated `pygix` integration (2026-10-08)
+
+On Apple Silicon macOS with Rust/Cargo 1.99.0, local builds used `pygix` HEAD
+`e4d2b313b840ea0e00453791882dbc6eb7c636f6`. Packaged builds resolved the
+public base `1d7bac742f70b72ddda0c7294f4a97566b8db596`, plus three refreshed
+vendored prerequisites. All bundled source files match the updated checkout.
+The packaged lock retains the existing registry versions and unconditional
+native parallelism through `gix-parallel`. Dependency metadata still fits the
+Rust 1.89 minimum; that is not an actual MSRV build.
+
+Both local and packaged modes passed all 105 integration tests on CPython
+3.14.7 (two expected skips) and free-threaded CPython 3.14.7 with `PYTHON_GIL=0`
+(one expected skip). Provenance reported the respective local/public pins.
+These checks include concurrent shared handles, lazy reads and cancellation,
+raw reflog/submodule names, linked worktrees, and loopback HTTP/TLS fixtures.
+Focused assertions also cover fallible pathspec directory queries, including
+empty and optional results. Packaged mode ignored an invalid local selection.
+
+Rust formatting, default clippy with warnings denied, seven Rust unit tests,
+and nine build/release/justfile helper checks passed. Reduced clippy passed for
+`sha1,sha256,revision,index` and `sha1,sha256,http`. SHA-1-only and SHA-256-only
+packaged builds each passed 105 discovered tests with 75 expected skips.
+Builds ran offline after fetching the new public Git revision, with C/C++
+compilers disabled and existing dependency caches reused.
+
+An ordinary ABI3 macOS wheel built independently from the source archive,
+installed offline into a disposable environment, passed all 105 tests (two
+expected skips), content validation, and the public provenance check. Archive
+checks found no developer dependency paths, unmerged revision pins, local
+lockfiles, or compiled binaries. Candidates are in
+`dist/pygix-reintegration-validation/` and use the development profile.
+
+The first archive build reused stale Cargo build-script output because tar's
+fixed source timestamps predated the shared cache. Refreshing the extracted
+build input timestamps forced recompilation, after which the wheel reported
+the new public revision. The validated wheel is this rebuilt artifact.
+Whitespace checks passed outside `vendor/`; vendored upstream documentation
+retains trailing whitespace to preserve exact source copies.
+
+No upstream edits, pushes, publication, remote CI, Intel builds, or actual
+Rust 1.89 execution were performed for this reintegration. Existing tags are
+unchanged. Cross-platform and release-profile checks remain configured in CI.
+
 ## Local Gitoxide development builds (2026-10-06)
 
 On Apple Silicon macOS, Cargo 1.99.0 resolved all 60 Gitoxide crates directly

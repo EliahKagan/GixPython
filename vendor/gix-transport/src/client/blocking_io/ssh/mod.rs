@@ -13,6 +13,7 @@ use crate::{Protocol, client::blocking_io::file::SpawnProcessOnDemand};
 pub enum Error {
     UnsupportedScheme(gix_url::Url),
     AmbiguousHostName { host: String },
+    PrepareCommand(gix_error::Error),
 }
 
 impl std::fmt::Display for Error {
@@ -26,6 +27,7 @@ impl std::fmt::Display for Error {
             Error::AmbiguousHostName { host } => {
                 write!(f, "Host name '{host}' could be mistaken for a command-line argument")
             }
+            Error::PrepareCommand(_) => f.write_str("Could not prepare the ssh command"),
         }
     }
 }
@@ -34,7 +36,8 @@ impl std::error::Error for Error {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         match self {
             Error::AmbiguousHostName { .. } => Some(const { &gix_error::ClassificationMarker::VALIDATION }),
-            Error::UnsupportedScheme(_) => None,
+            Error::UnsupportedScheme(_) => Some(const { &gix_error::ClassificationMarker::UNSUPPORTED }),
+            Error::PrepareCommand(err) => Some(err),
         }
     }
 }
@@ -102,7 +105,7 @@ pub mod invocation {
                 Error::AmbiguousUserName { .. } | Error::AmbiguousHostName { .. } => {
                     Some(const { &gix_error::ClassificationMarker::VALIDATION })
                 }
-                Error::Unsupported { .. } => None,
+                Error::Unsupported { .. } => Some(const { &gix_error::ClassificationMarker::UNSUPPORTED }),
             }
         }
     }
@@ -189,7 +192,7 @@ fn determine_client_kind(
     let mut kind = known_kind.unwrap_or_else(|| ProgramKind::from(ssh_cmd));
     if known_kind.is_none() && kind == ProgramKind::Simple {
         let mut cmd = build_client_feature_check_command(ssh_cmd, url, disallow_shell)?;
-        gix_features::trace::debug!(cmd = ?cmd, "invoking `ssh` for feature check");
+        gix_trace::debug!(cmd = ?cmd, "invoking `ssh` for feature check");
         kind = if cmd.status().ok().is_some_and(|status| status.success()) {
             ProgramKind::Ssh
         } else {
@@ -218,7 +221,7 @@ fn build_client_feature_check_command(ssh_cmd: &OsStr, url: &Url, disallow_shell
     if disallow_shell {
         prepare.use_shell = false;
     }
-    Ok(prepare.into())
+    prepare.try_into().map_err(Error::PrepareCommand)
 }
 
 #[cfg(test)]

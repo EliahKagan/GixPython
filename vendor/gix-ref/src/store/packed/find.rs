@@ -1,4 +1,4 @@
-use gix_error::{ErrorExt, Message, OptionExt, Result, ResultExt, message};
+use gix_error::{Message, OptionExt, Result, ResultExt, message};
 
 use gix_object::bstr::{BStr, BString};
 
@@ -50,7 +50,7 @@ impl packed::Buffer {
             }
             Err((parse_failure, _)) => {
                 if parse_failure {
-                    Err(gix_error::corruption("Malformed packed reference record").raise())
+                    Err(gix_error::corruption("Malformed packed reference record").into())
                 } else {
                     Ok(None)
                 }
@@ -70,7 +70,7 @@ impl packed::Buffer {
             .or_raise(|| message("The ref name or path is not a valid ref name"))?;
         self.try_find::<_, std::convert::Infallible>(name)?
             .ok_or_raise(|| crate::file::find::NotFound {
-                name: name.to_partial_path().to_owned(),
+                name: name.as_bstr().to_owned(),
             })
     }
 

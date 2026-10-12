@@ -46,7 +46,7 @@ Local Python build selection is implemented through `GIXPYTHON_GITOXIDE_PATH`,
 development lockfile; command-local patches build directly from checkout edits
 without changing packaged inputs. Local provenance reports checkout HEAD.
 Direct Cargo checks and maturin artifacts continue using release dependencies.
-After upstream integration, package builds will use compatible crates.io releases
+Once published, package builds will use compatible crates.io releases
 and retain macOS wheels plus an sdist. See [development instructions](../DEVELOPMENT.md)
 for the switch and migration requirements.
 
@@ -58,7 +58,20 @@ path, configuration, reference, shallow-state, and worktree results, and use
 `gix::utils` for interruptible reads following the `gix-parallel` split.
 The existing release tag and upstream checkout are preserved.
 
+On 2026-10-12, package dependencies moved to public `main` revision
+`09f85be4e3fda42f3e8fd19c53a63758fdf6fb3d`, which merged all three prerequisites
+in Gitoxide PR #3054. The vendored crates, packaged patches, and vendor-specific
+build/archive logic were removed. The latest published `gix 0.89.0` still lacks
+these fixes, so migration to crates.io remains pending their next release.
+The local checkout selector remains available and packaged provenance uses the
+new public revision.
+
 ## Acceptance
+
+Native `gix-testtools` fixtures are available through `gix.testtools`, with
+Python callbacks preserving `FixtureState` and return-value semantics.
+Read-only caches support inspection suites; writable temporary copies keep
+mutation tests isolated. See [the fixture guide](testtools.md).
 
 Every completed capability has a Python integration check and accurate type/documentation coverage. Checks use disposable repositories and isolated Git configuration; both hash kinds and relevant feature selections are exercised. Shared-handle concurrency, GIL-disabled execution, partial iterator consumption, interruption, stale-reference rejection, and artifact installation are project requirements.
 

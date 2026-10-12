@@ -41,6 +41,7 @@ mod runtime;
 mod status;
 #[cfg(feature = "attributes")]
 mod submodule;
+mod testtools;
 mod types;
 mod worktree;
 
@@ -86,6 +87,7 @@ fn build_features() -> Vec<&'static str> {
 
 #[pymodule(gil_used = false)]
 fn _gix(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    testtools::register(m)?;
     types::register(m)?;
     repository::register(m)?;
     objects::register(m)?;

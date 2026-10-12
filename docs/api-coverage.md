@@ -1,8 +1,8 @@
 # Native API coverage
 
 GixPython wraps Gitoxide's repository operations and the objects they return.
-The source baseline is [`gix` at `1d7bac742f70b72ddda0c7294f4a97566b8db596`](https://github.com/GitoxideLabs/gitoxide/tree/1d7bac742f70b72ddda0c7294f4a97566b8db596/gix/src).
-Small vendored fixes retain their individual provenance under `vendor/`.
+The source baseline is [`gix` at `09f85be4e3fda42f3e8fd19c53a63758fdf6fb3d`](https://github.com/GitoxideLabs/gitoxide/tree/09f85be4e3fda42f3e8fd19c53a63758fdf6fb3d/gix/src).
+This public `main` revision includes all formerly vendored prerequisites.
 This is broad coverage of the native engine, not a claim to implement every
 command available in the Git executable or every generic Rust helper.
 
@@ -120,6 +120,9 @@ policy for unavailable worktree encodings.
 
 ## Explicit limits and native behavior
 
+- `gix.testtools` provides native cached fixtures, Python producers and
+  post-processors, temporary writable copies, and isolated Git test commands.
+  See [fixture APIs and limits](testtools.md).
 - Rust callback/delegate interfaces are not Python callbacks. Tree change and
   directory traversal use native iterators/adapters. Custom per-entry traversal
   delegates, object-token visitor callbacks and filter callbacks are not exposed.
@@ -140,6 +143,8 @@ policy for unavailable worktree encodings.
   `transport_options()` containers, and trait-only storage helpers do not have
   separate Python equivalents. Native checkout and transport operations still
   apply the repository configuration.
+- Worktree removal uses the native default retry delay; `retry_delay` is not
+  configurable through `WorktreeRemoveOptions`.
 - Native pathspec matching suppresses some attribute-loading failures and may
   therefore report no match. Direct attribute-stack lookups preserve these I/O
   errors. `branch_names()` follows native behavior and skips non-UTF-8 names;

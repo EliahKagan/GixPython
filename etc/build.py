@@ -20,10 +20,8 @@ def local_cargo_config(root, checkout):
         for name, dependency in manifest["dependencies"].items()
         if name == "gix" or name.startswith("gix-")
     }
-    patches.update((source, name) for source, entries in manifest.get("patch", {}).items()
-                   for name in entries if name == "gix" or name.startswith("gix-"))
     for _, name in sorted(patches):
-        path = checkout / name / "Cargo.toml"
+        path = checkout / ("tests/tools" if name == "gix-testtools" else name) / "Cargo.toml"
         if not path.is_file() or tomllib.loads(path.read_text()).get("package", {}).get("name") != name:
             raise ValueError(f"Gitoxide checkout must contain {name}/Cargo.toml for package {name}: {checkout}")
     result = subprocess.run(["cargo", "--version"], check=True, capture_output=True, text=True)
@@ -36,7 +34,8 @@ def local_cargo_config(root, checkout):
         shutil.copy2(root / "Cargo.lock", lock)
     config = ["--config", "resolver.lockfile-path=" + json.dumps(str(lock))]
     for source, name in sorted(patches):
-        config.extend(["--config", f"patch.{json.dumps(source)}.{name}.path=" + json.dumps(str(checkout / name))])
+        path = checkout / ("tests/tools" if name == "gix-testtools" else name)
+        config.extend(["--config", f"patch.{json.dumps(source)}.{name}.path=" + json.dumps(str(path))])
     return config
 
 

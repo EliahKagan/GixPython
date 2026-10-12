@@ -9,12 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### New Features
 
+ - Expose native cached read-only and writable fixtures through `gix.testtools`,
+   with Python closures for fixture creation and post-processing.
  - Select a local Gitoxide checkout for Python development builds with
    `GIXPYTHON_GITOXIDE_PATH` or `--gitoxide-path`, using a separate development
    lockfile. `--packaged` forces release dependencies. Local builds report checkout HEAD.
 
 ### Other
 
+ - Use public Gitoxide `main` containing all three upstream prerequisites and
+   remove the vendored crates. `gix 0.89.0` does not yet include these fixes.
  - Reintegrate the updated Gitoxide `pygix` branch and its security-audit base.
    Refresh the three bundled prerequisites and propagate native errors from
    fallible path, configuration, reference, shallow-state, and worktree queries.

@@ -47,8 +47,6 @@ and proxy credential-helper configurations return errors rather than being
 silently ignored. Custom TLS client identities and Python credential callbacks
 are not exposed.
 
-The client-builder prerequisite is Gitoxide commit
-`ab1cb834df8f48e907f81e4b7471b06b4c9f1aa0`, prepared locally in the sibling checkout.
-The reproducible build uses the source-preserving vendored transport patch;
-see [its provenance and removal conditions](../vendor/gix-transport/README.pygix.md).
-No unpublished remote revision or machine-specific dependency path is required.
+The per-client builder is included in the pinned public Gitoxide `main` revision;
+see [upstream integration](../DEVELOPMENT.md#native-upstream-integration).
+No vendored transport patch or machine-specific dependency path is required.

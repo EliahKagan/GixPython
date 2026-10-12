@@ -1,5 +1,39 @@
 # Local validation
 
+## Python fixture tools (2026-10-12)
+
+The pinned `gix-testtools 0.22.0` is available as `gix.testtools` in default
+and reduced builds. Python producers and post-processors retain native
+`FixtureState`, cache versions, archives, and callback return values. Five
+integration checks run in disposable child-process workspaces and cover
+concurrent initialization, cross-process cache reuse, archive extraction,
+script arguments and Git environment isolation, all bound post-processing
+variants, writable copy/direct-generation cleanup, exception identity,
+failed-fixture retry, invalid inputs, and Python signal-handler preservation.
+
+On Apple Silicon macOS with Rust/Cargo 1.99.0, packaged CPython 3.14.7 passes
+all 110 tests with two expected skips; free-threaded CPython 3.14.7 with
+`PYTHON_GIL=0` passes all 110 with one skip. Both hash-only configurations
+pass 110 discovered tests with 75 expected skips, including the fixture
+checks. Default and reduced clippy (`sha1,sha256,revision,index`) pass with
+warnings denied; seven Rust tests, nine helper checks, formatting, and
+whitespace checks pass. Local dependency metadata resolves `gix-testtools`
+from the selected checkout's `tests/tools` directory. Dependency metadata
+fits Rust 1.89 without an actual MSRV run. Project builds disable C/C++
+compilers; fixture archives use TAR without the C-backed XZ feature.
+
+The ABI3 macOS wheel rebuilt from its sdist includes `gix.testtools` and
+its stubs, and passes all 110 tests on CPython 3.14.7 with two expected
+skips in an offline installation. Archive and wheel content checks pass.
+Development-profile candidates are in `dist/testtools-validation/`.
+
+The fixture API is a supported subset, documented in [the guide](testtools.md).
+Read-only paths remain a caller contract rather than filesystem protection.
+Callbacks must not recursively acquire the same fixture or change process
+environment/working directory while fixture calls run concurrently.
+No remote operations, publication, Intel/cross-platform builds, or actual
+Rust 1.89 execution were performed.
+
 ## Public `main` integration without vendoring (2026-10-12)
 
 On Apple Silicon macOS with Rust/Cargo 1.99.0, packaged builds resolve public

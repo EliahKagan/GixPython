@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### New Features
 
+ - Expose native cached read-only and writable fixtures through `gix.testtools`,
+   with Python closures for fixture creation and post-processing.
  - Select a local Gitoxide checkout for Python development builds with
    `GIXPYTHON_GITOXIDE_PATH` or `--gitoxide-path`, using a separate development
    lockfile. `--packaged` forces release dependencies. Local builds report checkout HEAD.

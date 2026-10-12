@@ -88,11 +88,12 @@ class BuildTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory, patch.object(build.subprocess, "run") as run:
             root = Path(directory)
             checkout = root / "checkout with spaces"
-            for name in ("gix", "gix-archive"):
-                path = checkout / name / "Cargo.toml"
+            for name in ("gix", "gix-archive", "gix-testtools"):
+                path = checkout / ("tests/tools" if name == "gix-testtools" else name) / "Cargo.toml"
                 path.parent.mkdir(parents=True)
                 path.write_text(f'[package]\nname = "{name}"\n')
             manifest = '[dependencies]\ngix = { git = "https://example.com/gitoxide" }\ngix-archive = { git = "https://example.com/gitoxide" }\n'
+            manifest += 'gix-testtools = { git = "https://example.com/gitoxide" }\n'
             (root / "Cargo.toml").write_text(manifest)
             (root / "Cargo.lock").write_text("packaged lockfile\n")
             run.return_value.stdout = "cargo 1.97.0 (example)\n"
@@ -100,10 +101,10 @@ class BuildTests(unittest.TestCase):
             lock = root / ".cache/gitoxide-local/Cargo.lock"
             self.assertEqual(lock.read_text(), "packaged lockfile\n")
             self.assertEqual(json.loads(config[1].split("=", 1)[1]), str(lock))
-            self.assertEqual(len(config), 6)
+            self.assertEqual(len(config), 8)
             self.assertTrue(all('patch."https://example.com/gitoxide".' in value for value in config[3::2]))
             self.assertEqual({json.loads(value.split("=", 1)[1]) for value in config[3::2]},
-                             {str(path.parent) for path in checkout.glob("*/Cargo.toml")})
+                             {str(path.parent) for path in checkout.rglob("Cargo.toml")})
             lock.write_text("updated development lockfile\n")
             build.local_cargo_config(root, checkout)
             self.assertEqual(lock.read_text(), "updated development lockfile\n")

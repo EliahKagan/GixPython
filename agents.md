@@ -38,6 +38,7 @@
 - Preserve tagged and published history. Now that `v0.1.0` exists, create new commits for further changes, including CI fixes; do not amend earlier commits unless the user explicitly authorizes that specific amendment.
 - Keep packaging, type information, examples, contributor guidance, CI, security policy, and artifact-building configuration part of the project.
 - Tests use disposable repositories and isolated Git configuration/environment. Never mutate the developer's checkout, another worktree, or shared Git metadata as a fixture.
+- Test suites may use native cached read-only fixtures through `gix.testtools`; only their initialization/post-processing callback may modify them. Use writable fixtures for mutations. Python fixture callbacks are supported separately from the callback-free progress API, without repository state locks or native signal ownership.
 - The implementation sequence and persistent design decisions are in [docs/implementation-plan.md](docs/implementation-plan.md). Update its status as work lands; do not present planned coverage as completed.
 
 ## Current session boundary

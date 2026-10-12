@@ -120,6 +120,9 @@ policy for unavailable worktree encodings.
 
 ## Explicit limits and native behavior
 
+- `gix.testtools` provides native cached fixtures, Python producers and
+  post-processors, temporary writable copies, and isolated Git test commands.
+  See [fixture APIs and limits](testtools.md).
 - Rust callback/delegate interfaces are not Python callbacks. Tree change and
   directory traversal use native iterators/adapters. Custom per-entry traversal
   delegates, object-token visitor callbacks and filter callbacks are not exposed.

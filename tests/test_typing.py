@@ -25,7 +25,7 @@ def stub_api():
             elif isinstance(node, ast.ImportFrom):
                 for alias in node.names:
                     aliases[alias.asname or alias.name] = alias.name
-            if path.name != "_gix.pyi":
+            if path.name not in ("_gix.pyi", "testtools.pyi"):
                 continue
             if isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AnnAssign)):
                 exports.add(node.target.id if isinstance(node, ast.AnnAssign) else node.name)
@@ -108,23 +108,24 @@ class TypingTests(unittest.TestCase):
     def test_runtime_exports_and_members_have_stubs(self):
         classes, aliases, functions, exports = stub_api()
         missing = []
-        for name in dir(gix):
-            if name.startswith("_"):
-                continue
-            value = getattr(gix, name)
-            if not callable(value):
-                continue
-            if name not in exports:
-                missing.append(name)
-            if not isinstance(value, type) or issubclass(value, BaseException):
-                continue
-            members = class_members(name, classes, aliases)
-            for member in vars(value):
-                if (not member.startswith("_") or member in PROTOCOL_METHODS) and member not in members:
-                    missing.append(f"{name}.{member}")
-                elif not member.startswith("_") and member in members:
-                    if callable(getattr(value, member)) != declares_method(members[member]):
-                        missing.append(f"{name}.{member}: method/property mismatch")
+        for module in (gix, gix.testtools):
+            for name in dir(module):
+                if name.startswith("_"):
+                    continue
+                value = getattr(module, name)
+                if not callable(value):
+                    continue
+                if name not in exports:
+                    missing.append(name)
+                if not isinstance(value, type) or issubclass(value, BaseException):
+                    continue
+                members = class_members(name, classes, aliases)
+                for member in vars(value):
+                    if (not member.startswith("_") or member in PROTOCOL_METHODS) and member not in members:
+                        missing.append(f"{name}.{member}")
+                    elif not member.startswith("_") and member in members:
+                        if callable(getattr(value, member)) != declares_method(members[member]):
+                            missing.append(f"{name}.{member}: method/property mismatch")
         self.assertEqual(missing, [], "Native exports/members missing from shipped stubs")
 
     def test_native_parameter_names_kinds_and_defaults_match_stubs(self):
@@ -149,10 +150,9 @@ class TypingTests(unittest.TestCase):
                     if actual_default != expected_default:
                         mismatches.append(f"{label}.{name}: runtime default={actual_default!r}, stub={expected_default!r}")
 
-        for name in dir(gix):
+        for name, value in ((name, getattr(module, name)) for module in (gix, gix.testtools) for name in dir(module)):
             if name.startswith("_"):
                 continue
-            value = getattr(gix, name)
             if isinstance(value, type):
                 if issubclass(value, BaseException):
                     continue

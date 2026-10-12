@@ -113,6 +113,11 @@ Development builds continue using the local selection described above.
 
 ## Integration checks
 
+Use [native cached fixtures](docs/testtools.md) through `gix.testtools` when
+tests only inspect stable repositories. Python closures can create fixtures
+or post-process scripted fixtures; writable helpers provide disposable copies
+for mutations. Do not write into shared read-only fixture directories.
+
 Each new binding should have a focused Python integration check against a disposable repository. Verify errors as well as success, both supported hash kinds, and any meaningful reduced feature configuration. Compare with Git when it provides an appropriate reference result.
 
 Threading checks share repository handles between Python threads and verify actual work with the GIL disabled. Lazy-API checks consume only a prefix and confirm that later results have not been eagerly produced. Long-running operations expose pollable `Progress.snapshot()` and `CancellationToken`; they must propagate Python interruption and release resources when stopped.

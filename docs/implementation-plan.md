@@ -68,6 +68,11 @@ new public revision.
 
 ## Acceptance
 
+Native `gix-testtools` fixtures are available through `gix.testtools`, with
+Python callbacks preserving `FixtureState` and return-value semantics.
+Read-only caches support inspection suites; writable temporary copies keep
+mutation tests isolated. See [the fixture guide](testtools.md).
+
 Every completed capability has a Python integration check and accurate type/documentation coverage. Checks use disposable repositories and isolated Git configuration; both hash kinds and relevant feature selections are exercised. Shared-handle concurrency, GIL-disabled execution, partial iterator consumption, interruption, stale-reference rejection, and artifact installation are project requirements.
 
 Gitoxide currently exposes commit merges even where older overview documentation says otherwise. Its push-related configuration does not itself provide native push execution. Verify capabilities against source rather than treating an old feature checklist as authoritative.

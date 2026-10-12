@@ -28,7 +28,13 @@
 
 - Use `MIT OR Apache-2.0`, with Sebastian Thiel as package author and copyright holder. Include both license texts in distributions.
 - Divide work into meaningful, independently buildable and testable commits. Include documentation and relevant regression checks with the behavior they describe.
-- Follow Gitoxide's purposeful conventional commits: use `feat:`/`fix:` for user-visible changes and plain descriptive subjects for maintenance. Use explicit Codex authorship for agent-created commits; package authorship is separate.
+- Follow Gitoxide's purposeful conventional commits:
+  - Write messages in Markdown, enclosing code, crate names, and shell commands in backticks. Use markup when it helps readers navigate the prose.
+  - Explain everything known about the motivation in the body, not merely what changed, and record relevant validation.
+  - Use conventional prefixes only for changelog-worthy changes: `feat:`/`fix:` for user-visible features/fixes; maintenance and refactors use plain descriptive subjects.
+  - Breaking changes use `!` before the colon, such as `change!:`, `remove!:`, `rename!:`, or `feat(gix-odb)!:`. Scope changelog-worthy changes touching multiple crates to the crate that should receive the entry.
+  - Every commit must be self-contained and pass the relevant checks independently. Keep breaking changes and all adaptations needed to build and test together.
+  - Use explicit Codex authorship for agent-created commits; package authorship is separate.
 - Preserve tagged and published history. Now that `v0.1.0` exists, create new commits for further changes, including CI fixes; do not amend earlier commits unless the user explicitly authorizes that specific amendment.
 - Keep packaging, type information, examples, contributor guidance, CI, security policy, and artifact-building configuration part of the project.
 - Tests use disposable repositories and isolated Git configuration/environment. Never mutate the developer's checkout, another worktree, or shared Git metadata as a fixture.

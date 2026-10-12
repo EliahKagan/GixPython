@@ -34,6 +34,8 @@ and `OverrideLock` also permits removing a locked worktree. A prepared target
 retains native selection until removed or closed. Removal consumes the target,
 including when the native operation fails. Preparation does not bypass checks
 performed at removal time.
+`WorktreeRemoveOptions` retains the native default delay of 10 milliseconds
+between retries after directory-not-empty errors.
 
 `add_worktree()` accepts progress and cancellation. Removal accepts progress;
 the native removal API has no interruption flag. `CheckoutOutcome` reports

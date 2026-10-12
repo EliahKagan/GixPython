@@ -20,8 +20,6 @@ def local_cargo_config(root, checkout):
         for name, dependency in manifest["dependencies"].items()
         if name == "gix" or name.startswith("gix-")
     }
-    patches.update((source, name) for source, entries in manifest.get("patch", {}).items()
-                   for name in entries if name == "gix" or name.startswith("gix-"))
     for _, name in sorted(patches):
         path = checkout / name / "Cargo.toml"
         if not path.is_file() or tomllib.loads(path.read_text()).get("package", {}).get("name") != name:

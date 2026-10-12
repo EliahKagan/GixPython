@@ -8,19 +8,23 @@ Git is a test reference implementation and fixture-creation tool, not a runtime 
 
 GitHub CI setup is authorized for this repository, including pushing the committed project and CI fixes to `origin/main`. Package publication, PyPI interaction, and changes to the upstream Gitoxide remote remain outside the task. Use cached dependencies when practical. For tools whose default cache is outside the writable workspace, choose a task-owned cache under `/private/tmp` or the repository.
 
-## Native upstream prerequisite
+## Native upstream integration
 
-The manifest pins Gitoxide revision `1d7bac742f70b72ddda0c7294f4a97566b8db596`. Three small fixes are included as source-preserving Cargo patches under `vendor/`:
+The manifest pins public Gitoxide `main` revision
+`09f85be4e3fda42f3e8fd19c53a63758fdf6fb3d`, which merged the Python binding
+prerequisites in [Gitoxide PR #3054](https://github.com/GitoxideLabs/gitoxide/pull/3054).
+No vendored crates or Cargo patches are needed. The integrated fixes provide:
 
-| Crate | Local upstream commit | Reason |
-| --- | --- | --- |
-| `gix-transport` | `ab1cb834df8f48e907f81e4b7471b06b4c9f1aa0` | Per-client reqwest TLS configuration with cached/lazy initialization and redirect policy. |
-| `gix-ref` | `066b042d68e5697b8272b636272c0c4253884882` | Preserve raw reflog message bytes. |
-| `gix-submodule` | `e4d2b313b840ea0e00453791882dbc6eb7c636f6` | Query submodule configuration using literal byte names. |
+| Crate | Behavior |
+| --- | --- |
+| `gix-transport` | Per-client reqwest TLS configuration with cached/lazy initialization and redirect policy. |
+| `gix-ref` | Preserve raw reflog message bytes. |
+| `gix-submodule` | Query submodule configuration using literal byte names. |
 
-Each directory includes its licenses and `README.pygix.md` provenance. Cargo manifests reference the pinned Git source for sibling dependencies. The source distribution includes these patches and does not require the developer's sibling checkout or an unpublished remote commit. Remove each patch after updating to an upstream revision containing its fix.
-
-The corresponding local upstream commits are in the prepared `gitoxide.pygix` checkout for Sebastian Thiel's review. Nothing was pushed. If later authorized, upstream contributions use `pr-from-session` and draft PRs only.
+The latest crates.io release checked on 2026-10-12, `gix 0.89.0`, does not yet
+contain these fixes. Package builds therefore use the public Git revision until
+a compatible release includes them. The source distribution builds independently
+of the developer's sibling checkout.
 
 ## Develop against a local Gitoxide checkout
 
@@ -49,14 +53,14 @@ Local `gix.__gix_revision__` reports checkout HEAD. Uncommitted changes are incl
 in the build but do not change that revision string. Every local invocation reads
 HEAD again; Cargo tracks the revision environment value to rebuild provenance
 when switching checkouts or returning to packaged mode. Packaged builds report
-the pinned public revision; the vendored fixes retain their separate provenance.
+the pinned public revision containing all three fixes.
 
-Continue using the local switch after the first release until the upstream fixes
-are merged. Once compatible `gix` and `gix-archive` releases on crates.io contain
+Continue using the local switch for upstream development. Once compatible
+`gix` and `gix-archive` releases on crates.io contain
 all three prerequisites, switch the manifest to those published versions,
-regenerate the committed lockfile, remove the corresponding vendored patches,
-and update the packaged revision in `build.rs`. The local selector derives patch
-sources from the manifest, so it continues working with crates.io dependencies.
+update the committed lockfile and packaged revision in `build.rs`. The local
+selector derives patch sources from the manifest, so it continues working with
+crates.io dependencies.
 Revalidate the supported feature groups and builds without C/C++ compilers at
 that migration. macOS binary wheels and an independently buildable source
 distribution remain the release artifacts.
@@ -152,4 +156,4 @@ maturin build --locked --release --out dist --interpreter /path/to/python3.14t
 maturin sdist --out dist
 ```
 
-Install a matching wheel into a disposable environment with `uv pip install --no-index --no-deps`, then run the test suite without `PYTHONPATH=python`. Rebuild the wheel from the unpacked sdist to verify its vendor/support files. The artifact workflow automates these checks. The stable ABI and free-threaded ABI are separate compatibility contracts; a wheel filename and successful import on one interpreter do not validate another ABI.
+Install a matching wheel into a disposable environment with `uv pip install --no-index --no-deps`, then run the test suite without `PYTHONPATH=python`. Rebuild the wheel from the unpacked sdist to verify its support files and independent dependency resolution. The artifact workflow automates these checks. The stable ABI and free-threaded ABI are separate compatibility contracts; a wheel filename and successful import on one interpreter do not validate another ABI.

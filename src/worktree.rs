@@ -437,6 +437,7 @@ mod mutation {
                 inner: gix::worktree::remove::Options {
                     thread_limit,
                     max_retries,
+                    ..Default::default()
                 },
             }
         }

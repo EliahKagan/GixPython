@@ -3,7 +3,6 @@ import argparse
 from email.parser import BytesParser
 from pathlib import Path
 import tarfile
-import tomllib
 import zipfile
 
 
@@ -23,16 +22,6 @@ def check_sdist(path, expected_stubs):
                     "README.md", "CHANGELOG.md", "RELEASING.md", "LICENSE-MIT", "LICENSE-APACHE", "python/gix/__init__.py",
                     "python/gix/py.typed", "etc/build.py", "etc/check_artifact.py", "tests/test_package.py"}
         required.update("python/gix/" + name for name in expected_stubs)
-        manifest = tomllib.loads(archive.extractfile(prefix + "Cargo.toml").read().decode())
-        for patches in manifest.get("patch", {}).values():
-            for dependency in patches.values():
-                if "path" not in dependency:
-                    continue
-                directory = dependency["path"]
-                require(not Path(directory).is_absolute() and ".." not in Path(directory).parts,
-                        "sdist patch dependencies must live inside the archive")
-                required.update(directory + "/" + name for name in
-                                ("Cargo.toml", "src/lib.rs", "LICENSE-MIT", "LICENSE-APACHE", "README.pygix.md"))
         require(required <= names, f"sdist missing: {sorted(required - names)}")
         require(not any(name.endswith((".so", ".pyd", ".dylib", ".pyc")) for name in names),
                 "sdist contains compiled artifacts")

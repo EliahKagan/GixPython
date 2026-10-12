@@ -66,7 +66,7 @@ python3 etc/build.py --no-default-features --features sha256,revision,index
 
 `gix.build_features()` reports the installation's capabilities, and `gix.HashKind.all()` reports its supported hash kinds. Feature-gated Python methods and types are absent when disabled. The included type stubs describe the full build.
 
-Ordinary wheel builds select the `abi3` Cargo feature for CPython 3.11+. Free-threaded builds require CPython 3.14+ and a wheel built for that interpreter. [Development instructions](https://github.com/GitoxideLabs/GixPython/blob/main/DEVELOPMENT.md) describe artifacts, validation, and the vendored upstream prerequisites. GitHub workflows test supported configurations and build macOS release artifacts. See [RELEASING.md](https://github.com/GitoxideLabs/GixPython/blob/main/RELEASING.md) for the manual publishing procedure.
+Ordinary wheel builds select the `abi3` Cargo feature for CPython 3.11+. Free-threaded builds require CPython 3.14+ and a wheel built for that interpreter. [Development instructions](https://github.com/GitoxideLabs/GixPython/blob/main/DEVELOPMENT.md) describe artifacts, validation, and upstream integration. GitHub workflows test supported configurations and build macOS release artifacts. See [RELEASING.md](https://github.com/GitoxideLabs/GixPython/blob/main/RELEASING.md) for the manual publishing procedure.
 
 ## More examples
 

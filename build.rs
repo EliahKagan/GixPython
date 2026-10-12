@@ -1,7 +1,7 @@
 fn main() {
     println!("cargo:rerun-if-env-changed=GIXPYTHON_BUILD_GIX_REVISION");
     let revision = std::env::var("GIXPYTHON_BUILD_GIX_REVISION")
-        .unwrap_or_else(|_| "1d7bac742f70b72ddda0c7294f4a97566b8db596".into());
+        .unwrap_or_else(|_| "09f85be4e3fda42f3e8fd19c53a63758fdf6fb3d".into());
     assert!(
         revision.len() == 40 && revision.bytes().all(|byte| byte.is_ascii_hexdigit()),
         "GIXPYTHON_BUILD_GIX_REVISION must be a 40-character Git revision"

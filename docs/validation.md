@@ -1,5 +1,46 @@
 # Local validation
 
+## Public `main` integration without vendoring (2026-10-12)
+
+On Apple Silicon macOS with Rust/Cargo 1.99.0, packaged builds resolve public
+Gitoxide `main` revision `09f85be4e3fda42f3e8fd19c53a63758fdf6fb3d`, the merge
+of Gitoxide PR #3054. Its native transport client configuration, raw reflog
+messages, and literal submodule names replace all three vendored crates.
+The latest published `gix 0.89.0` lacks those changes: an isolated build against
+the registry release fails because `reqwest::Options::configure_client` is
+absent, and source comparisons confirm the missing byte-preservation fixes.
+The public Git pin remains necessary until a compatible release is published.
+
+Packaged CPython 3.14.7 passes all 105 integration tests with two expected
+skips. Free-threaded CPython 3.14.7 with `PYTHON_GIL=0` passes the same suite
+with one expected skip. These exercise the former vendored fixes, concurrent
+shared handles, lazy reads and cancellation, and loopback HTTP/TLS fixtures.
+SHA-1-only and SHA-256-only builds each pass 105 discovered tests with 75
+expected capability/platform skips. Worktree removal adopts the new native
+default retry delay; existing removal lifecycle and safety checks pass.
+
+Default clippy and reduced clippy for `sha1,sha256,revision,index` and
+`sha1,sha256,http` pass with warnings denied. Seven Rust unit tests, nine
+build/release/justfile helper checks, Rust formatting, and whitespace checks
+pass. All 60 Gitoxide crates resolve to the selected local checkout without
+packaged patches, and the local build passes all 105 integration tests on
+CPython 3.14.7 with two expected skips. The tracked lockfile retains every unrelated registry
+dependency; all dependency metadata fits Rust 1.89, without an actual MSRV run.
+Project builds use disabled C/C++ compilers and cached dependencies after
+fetching the public revision. A standalone free-threaded interpreter was
+downloaded into the ignored worktree cache, without a Python package index.
+
+An ABI3 macOS wheel rebuilt from the source archive passes all 105 tests
+on CPython 3.12.14 with two expected skips, installed offline in a disposable
+environment. Archive/wheel content validation and packaged provenance checks
+pass. The archive contains no vendored crates, Cargo patches, developer paths,
+local lockfiles, or compiled binaries. Development-profile candidates are in
+`dist/main-reintegration-validation/`.
+
+No upstream edits, pushes, publication, remote CI, Intel/cross-platform builds,
+or actual Rust 1.89 execution were performed. The existing release tag is
+unchanged; broader platform/release-profile checks remain configured in CI.
+
 ## Updated `pygix` integration (2026-10-08)
 
 On Apple Silicon macOS with Rust/Cargo 1.99.0, local builds used `pygix` HEAD

@@ -1,6 +1,6 @@
 # Releasing GixPython
 
-The first version is **0.1.0**, for **macOS 11+ on Apple Silicon and Intel**.
+Version **0.2.0** targets **macOS 11+ on Apple Silicon and Intel**.
 The release contains four wheels and one source archive:
 
 | Architecture | Ordinary CPython | Free-threaded CPython |
@@ -14,8 +14,9 @@ Source builds require Rust 1.89+, a linker, and access to the pinned Rust depend
 
 ## One-time maintainer setup
 
-Use a PyPI account with two-factor authentication. Register a pending GitHub
-Trusted Publisher with these exact values:
+Use a PyPI account with two-factor authentication. For a first upload, register
+a pending GitHub Trusted Publisher with these exact values. For an existing
+project, confirm that its Trusted Publisher uses the same values:
 
 | Field | Value |
 | --- | --- |
@@ -43,6 +44,14 @@ Use Gitoxide's changelog style: `## VERSION (YYYY-MM-DD)`, with `New Features`,
 `Bug Fixes`, and `Other` sections when applicable. Set the date to the actual
 release day before creating the tag.
 
+For `0.2.0`, review the dated section in `CHANGELOG.md` and keep `Unreleased`
+for future changes. Validate locally before committing the preparation:
+
+```sh
+python3 etc/check_release.py --tag v0.2.0
+just helper-tests
+```
+
 Run CI on the final commit. Then start the **Release** workflow from that
 commit's branch with **publish unchecked**, or use:
 
@@ -64,13 +73,17 @@ older development artifacts separate from the release set.
 
 ## Publish
 
-After reviewing the tested commit, create an annotated tag `v0.1.0` and push
+After reviewing the tested commit, create an annotated tag `v0.2.0` and push
 that tag to `origin`. Start **Release** again with that tag selected and
 **publish checked**:
 
 ```sh
-gh workflow run release.yml --repo GitoxideLabs/GixPython --ref v0.1.0 -f publish=true
+git tag -a v0.2.0 -m "Release GixPython 0.2.0"
+git push origin v0.2.0
+gh workflow run release.yml --repo GitoxideLabs/GixPython --ref v0.2.0 -f publish=true
 ```
+
+Preserve the existing `v0.1.0` tag and published history.
 
 The workflow checks that the tag matches the version, rebuilds and tests the
 complete set, then waits for the `pypi` environment approval. Approve the job
@@ -82,11 +95,12 @@ Once uploaded, verify on both architectures and both interpreter kinds:
 
 ```sh
 python -m venv .release-check
-.release-check/bin/python -m pip install --only-binary=:all: GixPython==0.1.0
+.release-check/bin/python -m pip install --only-binary=:all: GixPython==0.2.0
 .release-check/bin/python -c 'import gix; print(gix.__version__, gix.build_features())'
 ```
 
 For free-threaded Python, set `PYTHON_GIL=0` and verify importing `gix` leaves
-`sys._is_gil_enabled()` false. An optional GitHub release can use the version's
-changelog text. PyPI filenames cannot be replaced after upload; corrections
-require a new version.
+`sys._is_gil_enabled()` false. The workflow publishes to PyPI only; create an
+optional GitHub release separately for `v0.2.0`, using only the `0.2.0` section
+of `CHANGELOG.md` as its release notes. PyPI filenames cannot be replaced after
+upload; corrections require a new version.

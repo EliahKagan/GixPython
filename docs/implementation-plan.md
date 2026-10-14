@@ -102,3 +102,11 @@ configuration destruction/retry while an in-memory native owner is active
 (`e33597f`). The [validation record](validation.md) lists the passing release
 wheel, free-threaded, hash-selection, Rust, and no-C builds, and distinguishes
 local evidence from platform checks configured for CI.
+
+## Release preparation
+
+Version `0.2.0` is prepared locally with aligned Cargo metadata and Python
+version checks, dated release notes, and updated maintainer instructions.
+Local validation is recorded in [validation.md](validation.md). The maintainer
+will create the tag; final platform CI, release artifact validation, and
+publication remain separate steps in [RELEASING.md](../RELEASING.md).

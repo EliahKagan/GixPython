@@ -1,5 +1,26 @@
 # Local validation
 
+## Version 0.2.0 preparation (2026-10-14)
+
+The Cargo manifest, root lockfile package, locked offline Cargo metadata,
+and Python package version assertion agree on `0.2.0`. The release metadata
+gate accepts `v0.2.0`; all nine build/release/justfile helper checks pass.
+The dated changelog consolidates changes since `v0.1.0`, and the maintainer
+instructions use the new version while preserving the existing tag.
+
+The packaged extension builds offline on Apple Silicon with C/C++ compilers
+disabled. CPython 3.14.7 passes all 110 integration tests with two expected
+skips. The initial sandboxed run could not bind loopback HTTP/TLS servers;
+the full suite passes when localhost access is allowed. All seven Rust unit
+tests, Rust formatting, and whitespace checks pass. The runtime reports
+`0.2.0` and the packaged Gitoxide revision
+`09f85be4e3fda42f3e8fd19c53a63758fdf6fb3d`.
+
+No `0.2.0` release artifacts, free-threaded or Intel builds, remote CI, tag,
+push, or publication were performed. Maturin is unavailable locally; the
+manual Release workflow remains responsible for building and validating
+the complete four-wheel and source-archive set before publication.
+
 ## Python fixture tools (2026-10-12)
 
 The pinned `gix-testtools 0.22.0` is available as `gix.testtools` in default

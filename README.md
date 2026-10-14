@@ -39,7 +39,7 @@ Native iterators and output streams remain lazy. Use their context managers or `
 
 ## Installation
 
-Once version 0.1.0 is published, install it with:
+Install the latest published version with:
 
 ```sh
 python -m pip install --only-binary=:all: GixPython

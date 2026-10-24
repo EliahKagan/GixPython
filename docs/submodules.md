@@ -57,5 +57,5 @@ native `SubmoduleStatus`, including recorded and checked-out IDs, state, changes
 and `is_dirty()`. An unknown dirty state returns `None`. Native status computes
 its result before returning; it is not a lazy change stream.
 
-Native raw-name handling is included in the pinned public Gitoxide `main`
-revision; see [upstream integration](../DEVELOPMENT.md#native-upstream-integration).
+Native raw-name handling is included in the published `gix 0.90.0` dependencies;
+see [upstream integration](../DEVELOPMENT.md#native-upstream-integration).

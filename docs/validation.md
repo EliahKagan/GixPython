@@ -1,5 +1,25 @@
 # Local validation
 
+## Version 0.3.0 preparation (2026-10-24)
+
+The manifest, root lockfile package, locked offline Cargo metadata, and
+rebuilt Python runtime agree on `0.3.0`. The release gate accepts `v0.3.0`,
+all nine helper checks pass, and formatting and whitespace checks pass.
+The dated changelog covers the crates.io `gix 0.90.0` integration and
+unconditional Sirocco selection while retaining `Unreleased` for future work.
+The release guide uses the new version and preserves existing tags.
+
+The default ABI3 extension builds offline with C/C++ compilers disabled on
+Apple Silicon. CPython 3.14.7 passes all 110 discovered integration tests
+with two expected skips, including localhost HTTP/TLS fixtures. Packaged
+Gitoxide provenance remains `dd39fb66e3b1551c9fe849043e39b357a9799ca1`.
+Dependency and reduced-build validation is recorded below.
+
+No release artifacts, free-threaded or Intel builds, remote CI, tag, push,
+or publication were performed. Maturin and a working free-threaded
+interpreter remain unavailable locally; the Release workflow must validate
+the complete four-wheel and source-archive set before publication.
+
 ## Crates.io `gix 0.90.0` integration (2026-10-24)
 
 Packaged dependencies resolve entirely from crates.io: `gix 0.90.0`,

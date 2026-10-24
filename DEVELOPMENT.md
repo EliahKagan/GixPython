@@ -10,9 +10,9 @@ GitHub CI setup is authorized for this repository, including pushing the committ
 
 ## Native upstream integration
 
-The manifest pins public Gitoxide `main` revision
-`09f85be4e3fda42f3e8fd19c53a63758fdf6fb3d`, which merged the Python binding
-prerequisites in [Gitoxide PR #3054](https://github.com/GitoxideLabs/gitoxide/pull/3054).
+The manifest uses crates.io releases `gix 0.90.0`, `gix-archive 0.39.0`, and
+`gix-testtools 0.22.0`. These include the Python binding prerequisites merged
+in [Gitoxide PR #3054](https://github.com/GitoxideLabs/gitoxide/pull/3054).
 No vendored crates or Cargo patches are needed. The integrated fixes provide:
 
 | Crate | Behavior |
@@ -21,10 +21,8 @@ No vendored crates or Cargo patches are needed. The integrated fixes provide:
 | `gix-ref` | Preserve raw reflog message bytes. |
 | `gix-submodule` | Query submodule configuration using literal byte names. |
 
-The latest crates.io release checked on 2026-10-12, `gix 0.89.0`, does not yet
-contain these fixes. Package builds therefore use the public Git revision until
-a compatible release includes them. The source distribution builds independently
-of the developer's sibling checkout.
+Package builds resolve entirely from crates.io. The source distribution builds
+independently of the developer's sibling checkout.
 
 ## Develop against a local Gitoxide checkout
 
@@ -53,16 +51,12 @@ Local `gix.__gix_revision__` reports checkout HEAD. Uncommitted changes are incl
 in the build but do not change that revision string. Every local invocation reads
 HEAD again; Cargo tracks the revision environment value to rebuild provenance
 when switching checkouts or returning to packaged mode. Packaged builds report
-the pinned public revision containing all three fixes.
+`dd39fb66e3b1551c9fe849043e39b357a9799ca1`, the source revision recorded in
+the published `gix 0.90.0` crate.
 
-Continue using the local switch for upstream development. Once compatible
-`gix` and `gix-archive` releases on crates.io contain
-all three prerequisites, switch the manifest to those published versions,
-update the committed lockfile and packaged revision in `build.rs`. The local
-selector derives patch sources from the manifest, so it continues working with
-crates.io dependencies.
-Revalidate the supported feature groups and builds without C/C++ compilers at
-that migration. macOS binary wheels and an independently buildable source
+Continue using the local switch for upstream development with compatible crate
+versions. The local selector derives patch sources from the manifest and uses
+crates.io patches. macOS binary wheels and an independently buildable source
 distribution remain the release artifacts.
 
 ## Validation
@@ -140,6 +134,10 @@ The artifact workflow builds macOS 11+ candidates for Apple Silicon and Intel, f
 
 
 ## Feature selections
+
+Every build enables native `gix/zlib-sirocco`, including reduced configurations.
+It selects the pure Rust Sirocco inflater; compression uses the native pure Rust
+backend.
 
 `max-pure` is the default aggregate. The independently selectable groups are declared in `Cargo.toml`; dependent features enable their required native capabilities automatically. Parallelism is unconditional. Select at least one of `sha1` and `sha256`. `signing` enables native signing configuration and execution without requiring network support. `http` adds the blocking HTTP transport, and `https` adds the pure Rust TLS provider. The maturin configuration enables `abi3` by default for ordinary CPython. PyO3 ignores that feature on free-threaded interpreters and builds their version-specific ABI instead.
 

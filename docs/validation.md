@@ -1,5 +1,34 @@
 # Local validation
 
+## Crates.io `gix 0.90.0` integration (2026-10-24)
+
+Packaged dependencies resolve entirely from crates.io: `gix 0.90.0`,
+`gix-archive 0.39.0`, and `gix-testtools 0.22.0`. The lockfile preserves
+unrelated dependency versions. Default and hash-only dependency metadata
+enable `gix/zlib-sirocco` and `gix-zlib/sirocco`; all resolved dependency
+MSRVs fit Rust 1.89. Packaged provenance uses the published `gix` crate's
+source revision `dd39fb66e3b1551c9fe849043e39b357a9799ca1`.
+
+On Apple Silicon macOS with Rust/Cargo 1.99.1 and CPython 3.14.7, the
+default ABI3 build passes all 110 discovered integration tests with two
+expected skips. The sandbox blocks loopback server binding; the full suite
+passes with localhost access allowed. SHA-1-only and SHA-256-only ABI3
+builds each pass 110 discovered tests with 75 expected skips. All builds
+disable C/C++ compilers, including the default dependency build from scratch.
+The published fixture symlink preflight passes a disposable scripted fixture
+check, including rejection of a missing preflight result.
+
+Default clippy and reduced clippy for `sha1,sha256,revision,index` and
+`sha1,sha256,http` pass with warnings denied. Seven Rust unit tests, nine
+build/release/justfile helper checks, formatting, and whitespace checks pass.
+The local build selector's helper check covers all three crates.io patches.
+The checkout's extension is restored to the default ABI3 configuration.
+
+Maturin and a working free-threaded interpreter are unavailable locally, so
+no wheel/sdist or free-threaded build was performed. Actual Rust 1.89,
+Intel/cross-platform builds, a real local Gitoxide checkout build, remote CI,
+push, and publication were not performed.
+
 ## Version 0.2.0 preparation (2026-10-14)
 
 The Cargo manifest, root lockfile package, locked offline Cargo metadata,

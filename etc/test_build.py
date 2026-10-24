@@ -112,8 +112,9 @@ class BuildTests(unittest.TestCase):
             self.assertEqual((root / "Cargo.toml").read_text(), manifest)
             self.assertFalse((root / ".cargo/config.toml").exists())
             # The same selector must work after the release dependencies move to crates.io.
-            (root / "Cargo.toml").write_text('[dependencies]\ngix = { version = "1" }\ngix-archive = { version = "1" }\n')
+            (root / "Cargo.toml").write_text(manifest.replace('git = "https://example.com/gitoxide"', 'version = "1"'))
             config = build.local_cargo_config(root, checkout)
+            self.assertEqual(len(config), 8)
             self.assertTrue(all('patch."crates-io".' in value for value in config[3::2]))
             lock.unlink()
             run.return_value.stdout = "cargo 1.96.0 (example)\n"

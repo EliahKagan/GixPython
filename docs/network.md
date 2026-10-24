@@ -47,6 +47,6 @@ and proxy credential-helper configurations return errors rather than being
 silently ignored. Custom TLS client identities and Python credential callbacks
 are not exposed.
 
-The per-client builder is included in the pinned public Gitoxide `main` revision;
+The per-client builder is included in the published `gix 0.90.0` dependencies;
 see [upstream integration](../DEVELOPMENT.md#native-upstream-integration).
 No vendored transport patch or machine-specific dependency path is required.

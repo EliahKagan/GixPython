@@ -1,8 +1,8 @@
 # Native API coverage
 
 GixPython wraps Gitoxide's repository operations and the objects they return.
-The source baseline is [`gix` at `09f85be4e3fda42f3e8fd19c53a63758fdf6fb3d`](https://github.com/GitoxideLabs/gitoxide/tree/09f85be4e3fda42f3e8fd19c53a63758fdf6fb3d/gix/src).
-This public `main` revision includes all formerly vendored prerequisites.
+The source baseline is [`gix 0.90.0`](https://docs.rs/gix/0.90.0/gix/), which
+includes all formerly vendored prerequisites.
 This is broad coverage of the native engine, not a claim to implement every
 command available in the Git executable or every generic Rust helper.
 
@@ -57,6 +57,7 @@ a hash feature enables an algorithm; it does not convert an existing repository.
 `parallel` is always enabled for the native dependency. `max-performance`
 selects additional native performance features and does not control thread
 safety. The Rust dependency configuration uses Rust hashing/compression and
+enables `gix/zlib-sirocco` in every build for decompression. HTTPS uses
 reqwest/rustls with an explicit Graviola provider. `abi3` selects the ordinary
 CPython stable ABI; free-threaded CPython builds require their own ABI.
 

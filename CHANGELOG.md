@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Other
+
+ - Use crates.io releases `gix 0.90.0`, `gix-archive 0.39.0`, and
+   `gix-testtools 0.22.0` in place of the Git revision pin.
+ - Enable `gix/zlib-sirocco` in all builds for pure Rust decompression.
+
 ## 0.2.0 (2026-10-14)
 
 ### New Features

@@ -46,7 +46,7 @@ Local Python build selection is implemented through `GIXPYTHON_GITOXIDE_PATH`,
 development lockfile; command-local patches build directly from checkout edits
 without changing packaged inputs. Local provenance reports checkout HEAD.
 Direct Cargo checks and maturin artifacts continue using release dependencies.
-Once published, package builds will use compatible crates.io releases
+Package builds use compatible crates.io releases
 and retain macOS wheels plus an sdist. See [development instructions](../DEVELOPMENT.md)
 for the switch and migration requirements.
 
@@ -65,6 +65,13 @@ build/archive logic were removed. The latest published `gix 0.89.0` still lacks
 these fixes, so migration to crates.io remains pending their next release.
 The local checkout selector remains available and packaged provenance uses the
 new public revision.
+
+On 2026-10-24, package dependencies moved to crates.io releases `gix 0.90.0`,
+`gix-archive 0.39.0`, and `gix-testtools 0.22.0`. All required native APIs are
+published, including the fixture symlink preflight. Packaged provenance reports
+`dd39fb66e3b1551c9fe849043e39b357a9799ca1` from the published `gix` source.
+Every build enables `gix/zlib-sirocco`, including reduced feature selections.
+The local checkout selector continues using command-local crates.io patches.
 
 ## Acceptance
 

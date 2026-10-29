@@ -81,6 +81,10 @@ loop. Set `PYTHON` to select an installed interpreter.
 `just test-free-threaded /path/to/python3.14t` builds and tests the free-threaded ABI with `PYTHON_GIL=0`.
 The package test also verifies importing the extension keeps the GIL disabled.
 
+To reproduce CI's dependency checks locally, install `cargo-deny` and run
+`just deny`. It checks packaged dependencies, regardless of the local Gitoxide
+selection.
+
 ## Try a published release
 
 With uv installed, open an IPython prompt with `gix` already imported and Tab

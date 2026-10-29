@@ -1,0 +1,42 @@
+# Check optional and development dependencies on all platforms.
+[graph]
+all-features = true
+
+# https://embarkstudios.github.io/cargo-deny/checks/advisories/cfg.html
+[advisories]
+unsound = "all"
+unmaintained = "all"
+ignore = []
+
+# Licenses required by the packaged dependency graph, including PyO3's
+# target-lexicon and the HTTPS certificate bundles.
+[licenses]
+allow = [
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-3-Clause",
+    "CDLA-Permissive-2.0",
+    "ISC",
+    "MIT",
+    "MIT-0",
+    "MPL-2.0",
+    "Unicode-3.0",
+    "Zlib",
+]
+confidence-threshold = 0.8
+
+[bans]
+# Upstream dependencies require several versions of some crates. Report
+# duplication without rejecting it.
+multiple-versions = "warn"
+deny = [
+    # These releases used a precompiled binary instead of building from source.
+    # https://github.com/serde-rs/serde/issues/2538
+    # https://github.com/serde-rs/serde/pull/2590
+    { name = "serde_derive", version = ">1.0.171, <1.0.185" },
+]
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]

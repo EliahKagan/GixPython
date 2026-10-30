@@ -45,6 +45,11 @@ test-free-threaded interpreter:
 unit-tests:
     cargo test --locked --lib
 
+# Check packaged dependency advisories, bans, licenses, and sources (requires cargo-deny).
+[group('Tests')]
+deny:
+    cargo deny --workspace --all-features --locked check
+
 # Check the build, release, and justfile helpers without building the extension.
 [group('Tests')]
 helper-tests:
